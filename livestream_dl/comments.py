@@ -36,7 +36,7 @@ class CommentsDownloader(object):
                 self.broadcast['id'], last_comment_ts=first_comment_created_at)
             comments_collected = comments_res.get('comments', [])
             first_comment_created_at = (
-                comments[0]['created_at_utc'] if comments else int(time.time() - 5))
+                comments_collected[0]['created_at_utc'] if comments_collected else int(time.time() - 5))
             
             after_count = len(comments_collected)
             if after_count > before_count:
