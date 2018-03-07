@@ -34,10 +34,11 @@ class CommentsDownloader(object):
         try:
             comments_res = self.api.broadcast_comments(
                 self.broadcast['id'], last_comment_ts=first_comment_created_at)
-            comments_collected = comments_res.get('comments', [])
+            comments = comments_res.get('comments', [])
             first_comment_created_at = (
-                comments_collected[0]['created_at_utc'] if comments_collected else int(time.time() - 5))
-            
+                comments[0]['created_at_utc'] if comments else int(time.time() - 5))
+            # save comment if it's in list of commenter IDs or if user is verified
+            comments_collected.extend(comments)
             after_count = len(comments_collected)
             if after_count > before_count:
                 # save intermediately to avoid losing comments due to unexpected errors
@@ -71,7 +72,8 @@ class CommentsDownloader(object):
             comments_res = self.api.replay_broadcast_comments(
                 self.broadcast['id'], starting_offset=starting_offset, encoding_tag=encoding_tag)
             starting_offset = comments_res.get('ending_offset', 0)
-            comments_collected = comments_res.get('comments', [])
+            comments = comments_res.get('comments', [])
+            comments_collected.extend(comments)
             if self.broadcast['duration'] and starting_offset and self.broadcast['duration'] < starting_offset:
                 # offset is past video duration
                 break
