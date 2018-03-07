@@ -34,16 +34,10 @@ class CommentsDownloader(object):
         try:
             comments_res = self.api.broadcast_comments(
                 self.broadcast['id'], last_comment_ts=first_comment_created_at)
-            comments = comments_res.get('comments', [])
+            comments_collected = comments_res.get('comments', [])
             first_comment_created_at = (
                 comments[0]['created_at_utc'] if comments else int(time.time() - 5))
-            # save comment if it's in list of commenter IDs or if user is verified
-            comments_collected.extend(
-                list(filter(
-                    lambda x: (str(x['user_id']) in commenter_ids or
-                               x['user']['username'] in commenter_ids or
-                               x['user']['is_verified']),
-                    comments)))
+            
             after_count = len(comments_collected)
             if after_count > before_count:
                 # save intermediately to avoid losing comments due to unexpected errors
