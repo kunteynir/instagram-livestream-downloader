@@ -77,13 +77,7 @@ class CommentsDownloader(object):
             comments_res = self.api.replay_broadcast_comments(
                 self.broadcast['id'], starting_offset=starting_offset, encoding_tag=encoding_tag)
             starting_offset = comments_res.get('ending_offset', 0)
-            comments = comments_res.get('comments', [])
-            comments_collected.extend(
-                list(filter(
-                    lambda x: (str(x['comment']['user']['pk']) in commenter_ids or
-                               x['comment']['user']['username'] in commenter_ids or
-                               x['comment']['user']['is_verified']),
-                    comments)))
+            comments_collected = comments_res.get('comments', [])
             if self.broadcast['duration'] and starting_offset and self.broadcast['duration'] < starting_offset:
                 # offset is past video duration
                 break
